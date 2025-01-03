@@ -30,6 +30,14 @@ async function run() {
         const database = client.db('Pipeline');
         const users = database.collection('users')
 
+
+        /* $match: 
+
+        ** Used the query, when directly fetching data;
+        ** Used $match, When need to combine filtering with other stages like $group, $project, $sort, etc.;
+
+         */
+        
         app.get('/users', async (req, res) => {
             // const query = {country: 'USA', age: {$gt: 30}}
             // const result = await users.find(query).toArray()
