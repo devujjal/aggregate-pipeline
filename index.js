@@ -55,7 +55,7 @@ async function run() {
         })
 
 
-        //Total Score for All Students
+        //Task 1: Total Score for All Students
         app.get('/total', async (req, res) => {
             const result = await students.aggregate([
                 {
@@ -65,6 +65,18 @@ async function run() {
 
             res.send({ result })
         })
+
+        //Task 2: Total Score by Student
+        app.get('/total-score-by-student', async (req, res) => {
+            const result = await students.aggregate([
+                {
+                    $group: { _id: '$name', score: { $sum: '$score' } }
+                }
+            ]).toArray();
+
+            res.send({ result })
+        })
+
 
 
 
