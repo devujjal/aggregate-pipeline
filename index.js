@@ -29,6 +29,9 @@ async function run() {
 
         const database = client.db('Pipeline');
         const users = database.collection('users')
+        const students = database.collection('students')
+
+
 
 
         /* $match: 
@@ -37,7 +40,7 @@ async function run() {
         ** Used $match, When need to combine filtering with other stages like $group, $project, $sort, etc.;
 
          */
-        
+
         app.get('/users', async (req, res) => {
             // const query = {country: 'USA', age: {$gt: 30}}
             // const result = await users.find(query).toArray()
@@ -52,6 +55,18 @@ async function run() {
         })
 
 
+        //Total Score for All Students
+        app.get('/total', async (req, res) => {
+            const result = await students.aggregate([
+                {
+                    $group: { _id: null, totalCounts: { $sum: '$score' } }
+                }
+            ]).toArray();
+
+            res.send({ result })
+        })
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
@@ -62,6 +77,8 @@ async function run() {
     }
 }
 run().catch(console.dir);
+
+
 
 
 
