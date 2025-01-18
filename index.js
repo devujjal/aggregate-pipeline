@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 var cors = require('cors')
 const port = process.env.PORT || 5000;
@@ -41,40 +41,52 @@ async function run() {
 
          */
 
-        app.get('/users', async (req, res) => {
-            // const query = {country: 'USA', age: {$gt: 30}}
-            // const result = await users.find(query).toArray()
+        /*     app.get('/users', async (req, res) => {
+                // const query = {country: 'USA', age: {$gt: 30}}
+                // const result = await users.find(query).toArray()
+    
+                const result = await users.aggregate([
+                    {
+                        $match: { country: "Canada", age: { $gt: 30 } }
+                    }
+                ]).toArray()
+    
+                res.send(result)
+            })
+    
+    
+            //Task 1: Total Score for All Students
+            app.get('/total', async (req, res) => {
+                const result = await students.aggregate([
+                    {
+                        $group: { _id: null, totalCounts: { $sum: '$score' } }
+                    }
+                ]).toArray();
+    
+                res.send({ result })
+            })
+    
+            //Task 2: Total Score by Student
+            app.get('/total-score-by-student', async (req, res) => {
+                const result = await students.aggregate([
+                    {
+                        $group: { _id: '$name', score: { $sum: '$score' } }
+                    }
+                ]).toArray();
+    
+                res.send({ result })
+            }) */
 
-            const result = await users.aggregate([
+
+
+
+        app.get('/marks', async (req, res) => {
+            const result = await students.aggregate([
                 {
-                    $match: { country: "Canada", age: { $gt: 30 } }
+                    $group: { _id: '$name', totalSubject: { $sum: 1 }, totalMark: { $sum: '$score' } }
                 }
             ]).toArray()
-
             res.send(result)
-        })
-
-
-        //Task 1: Total Score for All Students
-        app.get('/total', async (req, res) => {
-            const result = await students.aggregate([
-                {
-                    $group: { _id: null, totalCounts: { $sum: '$score' } }
-                }
-            ]).toArray();
-
-            res.send({ result })
-        })
-
-        //Task 2: Total Score by Student
-        app.get('/total-score-by-student', async (req, res) => {
-            const result = await students.aggregate([
-                {
-                    $group: { _id: '$name', score: { $sum: '$score' } }
-                }
-            ]).toArray();
-
-            res.send({ result })
         })
 
 
