@@ -106,13 +106,28 @@ async function run() {
         app.get('/find-total-students-per-subject', async (req, res) => {
             const result = await students.aggregate([
                 {
-                    $group: { _id: '$subject', totalStudents: {$sum: 1} }
+                    $group: { _id: '$subject', totalStudents: { $sum: 1 } }
                 }
             ]).toArray();
 
             res.send(result)
         })
 
+
+        //Highest Scorer to Lower Score
+        app.get('/highest-score', async (req, res) => {
+            const result = await students.aggregate([
+                {
+                    $group: { _id: '$name', totalMark: { $sum: '$score' } }
+                },
+                {
+                    $sort: { totalMark: -1 }
+                }
+            ]).toArray()
+
+
+            res.send(result)
+        })
 
 
 
