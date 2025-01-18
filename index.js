@@ -89,6 +89,7 @@ async function run() {
             res.send(result)
         })
 
+
         // Total Score by Subject
         app.get('/subjectMarks', async (req, res) => {
             const result = await students.aggregate([
@@ -99,8 +100,18 @@ async function run() {
             res.send(result)
         })
 
-        
 
+
+        // Total Students per Subject
+        app.get('/find-total-students-per-subject', async (req, res) => {
+            const result = await students.aggregate([
+                {
+                    $group: { _id: '$subject', totalStudents: {$sum: 1} }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
 
 
 
