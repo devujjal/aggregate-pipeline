@@ -30,6 +30,7 @@ async function run() {
         const database = client.db('Pipeline');
         const users = database.collection('users')
         const students = database.collection('students')
+        const sales = database.collection('sales')
 
 
 
@@ -124,7 +125,20 @@ async function run() {
                     $sort: { totalMark: -1 }
                 }
             ]).toArray()
+            res.send(result)
+        })
 
+        //Total Quantity Sold
+        app.get('/total-quantity', async(req, res) => {
+            const result = await sales.aggregate([
+                {
+                    $group: {_id: null, totalQuantity: {$sum: '$quantity'}}
+                }
+            ]).toArray();
+
+            if(result.length === 0){
+                res.status(404).send('No sales data found')
+            }
 
             res.send(result)
         })
