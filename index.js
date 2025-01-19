@@ -10,8 +10,8 @@ app.use(cors());
 app.use(express.json())
 
 
-
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.iam7h.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -129,19 +129,36 @@ async function run() {
         })
 
         //Total Quantity Sold
-        app.get('/total-quantity', async(req, res) => {
+        app.get('/total-quantity', async (req, res) => {
             const result = await sales.aggregate([
                 {
-                    $group: {_id: null, totalQuantity: {$sum: '$quantity'}}
+                    $group: { _id: null, totalQuantity: { $sum: '$quantity' } }
                 }
             ]).toArray();
 
-            if(result.length === 0){
+            if (result.length === 0) {
                 res.status(404).send('No sales data found')
             }
 
             res.send(result)
         })
+
+
+        //Total Revenue by Product
+        app.get('/total-revenue', async (req, res) => {
+            const result = await sales.aggregate([
+                {
+                    $addFields: { total: { $multiply: ['$quantity', '$price'] } }
+                },
+                {
+                    $group: { _id: '$product', totalSum: { $sum: '$total' } }
+                }
+
+            ]).toArray();
+
+            res.send(result)
+        })
+
 
 
 
