@@ -159,6 +159,17 @@ async function run() {
             res.send(result)
         })
 
+        // Total Sales for Each Product
+        app.get('/sold-each-product', async (req, res) => {
+            const result = await sales.aggregate([
+                {
+                    $group: { _id: '$product', totalSales: { $sum: '$quantity' } }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
+
 
 
 
