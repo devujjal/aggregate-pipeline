@@ -159,6 +159,7 @@ async function run() {
             res.send(result)
         })
 
+
         // Total Sales for Each Product
         app.get('/sold-each-product', async (req, res) => {
             const result = await sales.aggregate([
@@ -167,8 +168,34 @@ async function run() {
                 }
             ]).toArray();
 
+            if (result.length === 0) {
+                res.status(404).send('No data found')
+            }
+
             res.send(result)
         })
+
+        //Top-Selling Product
+        app.get('/top-selling-product', async (req, res) => {
+            const result = await sales.aggregate([
+                {
+                    $group: { _id: '$product', totalSales: { $sum: '$quantity' } }
+                },
+                {
+                    $sort: { totalSales: -1 }
+                }
+            ]).toArray();
+
+            if (result.length === 0) {
+                res.status(404).send('No data found')
+            }
+
+
+            res.send(result)
+        })
+
+
+
 
 
 
