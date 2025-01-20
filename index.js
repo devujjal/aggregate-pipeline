@@ -102,7 +102,6 @@ async function run() {
         })
 
 
-
         // Total Students per Subject
         app.get('/find-total-students-per-subject', async (req, res) => {
             const result = await students.aggregate([
@@ -195,6 +194,18 @@ async function run() {
         })
 
 
+        /* $Project */
+
+        //Simple inclusion and exclusion
+        app.get('/basic', async (req, res) => {
+            const result = await sales.aggregate([
+                {
+                    $project: { product: 1, price: 1, _id: 0 }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
 
 
 
