@@ -208,6 +208,17 @@ async function run() {
         })
 
 
+        //Renaming a field
+        app.get('/remain-field', async (req, res) => {
+            const result = await sales.aggregate([
+                {
+                    $project: { product: 1, saleId: 1, saleIDNO: '$saleId', productPrice: '$price' }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
+
 
 
 
