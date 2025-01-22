@@ -31,6 +31,7 @@ async function run() {
         const users = database.collection('users')
         const students = database.collection('students')
         const sales = database.collection('sales')
+        const orders = database.collection('orders')
 
 
 
@@ -221,17 +222,47 @@ async function run() {
 
         //Creating a new field
 
-        app.get('/new-field', async(req, res) => {
+        app.get('/new-field', async (req, res) => {
             const result = await sales.aggregate([
                 {
-                    $project: {product: 1, saleId: 1, price:1, discount: {$multiply: ['$price', 0.1]}}
+                    $project: { product: 1, saleId: 1, price: 1, discount: { $multiply: ['$price', 0.1] } }
                 }
             ]).toArray();
 
             res.send(result)
         })
 
-        
+
+        app.get('/orders', async (req, res) => {
+            const result = await orders.aggregate([
+                {
+                    $project: {
+                        _id: 0,
+                        orderId: 1,
+                        customerName: 1,
+                        totalAmount: 1,
+                        shippingFee: {
+                            $multiply: ['$totalAmount', 0.1]
+                        }
+
+                    }
+                }
+            ]).toArray()
+
+            res.send(result)
+        })
+
+        app.get('/increase-age', async(req, res) => {
+            const result =await users.aggregate([
+                {
+                    $project: {name: 1, _id: 0, oldAge: '$age', newAge: {$sum: ['$age', 2]}}
+                }
+            ]).toArray()
+
+            res.send(result)
+        })
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
