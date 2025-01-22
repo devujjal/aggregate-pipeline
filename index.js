@@ -219,8 +219,19 @@ async function run() {
             res.send(result)
         })
 
+        //Creating a new field
 
+        app.get('/new-field', async(req, res) => {
+            const result = await sales.aggregate([
+                {
+                    $project: {product: 1, saleId: 1, price:1, discount: {$multiply: ['$price', 0.1]}}
+                }
+            ]).toArray();
 
+            res.send(result)
+        })
+
+        
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
