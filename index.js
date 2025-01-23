@@ -28,10 +28,11 @@ async function run() {
         await client.connect();
 
         const database = client.db('Pipeline');
-        const users = database.collection('users')
-        const students = database.collection('students')
-        const sales = database.collection('sales')
-        const orders = database.collection('orders')
+        const users = database.collection('users');
+        const students = database.collection('students');
+        const sales = database.collection('sales');
+        const orders = database.collection('orders');
+        const customers = database.collection('customers');
 
 
 
@@ -252,10 +253,31 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/increase-age', async(req, res) => {
-            const result =await users.aggregate([
+        app.get('/increase-age', async (req, res) => {
+            const result = await users.aggregate([
                 {
-                    $project: {name: 1, _id: 0, oldAge: '$age', newAge: {$sum: ['$age', 2]}}
+                    $project: { name: 1, _id: 0, oldAge: '$age', newAge: { $sum: ['$age', 2] } }
+                }
+            ]).toArray()
+
+            res.send(result)
+        })
+
+
+        //Extracting Nested object Fields
+        app.get('/nested-objects', async (req, res) => {
+            const result = await customers.aggregate([
+                {
+                    $project: {
+                        orderId: 1,
+                        _id: 0,
+                        'customer.email': 1,
+                        'customer.name': 1,
+                        'customer.phone': 1,
+                        renameField: '$orderId',
+                        modify: {$sum: ['$totalAmount', 2]},
+                        hello: 'I am good'
+                    }
                 }
             ]).toArray()
 
