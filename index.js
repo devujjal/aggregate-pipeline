@@ -33,6 +33,7 @@ async function run() {
         const sales = database.collection('sales');
         const orders = database.collection('orders');
         const customers = database.collection('customers');
+        const arrays = database.collection('arrays');
 
 
 
@@ -275,7 +276,7 @@ async function run() {
                         'customer.name': 1,
                         'customer.phone': 1,
                         renameField: '$orderId',
-                        modify: {$sum: ['$totalAmount', 2]},
+                        modify: { $sum: ['$totalAmount', 2] },
                         hello: 'I am good'
                     }
                 }
@@ -284,6 +285,23 @@ async function run() {
             res.send(result)
         })
 
+        //Include, Exclude Specific Fields from an Array
+        app.get('/array-stuff', async (req, res) => {
+            const result = await arrays.aggregate([
+                {
+                    $project: {
+                        items: {
+                            product: 1,
+                            price: 1
+                        },
+                        _id: 0
+
+                    }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
 
 
         // Send a ping to confirm a successful connection
