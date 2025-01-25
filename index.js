@@ -304,6 +304,21 @@ async function run() {
         })
 
 
+        //Adding the Number of Items
+        app.get('/adding-new', async(req, res) => {
+            const result = await arrays.aggregate([
+                {
+                    $project: {
+                        orderId: 1,
+                        totalPrice : {$sum: '$items.price'},
+                        totalItems : {$size: '$items'}
+                    }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
