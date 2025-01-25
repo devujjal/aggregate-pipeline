@@ -305,17 +305,47 @@ async function run() {
 
 
         //Adding the Number of Items
-        app.get('/adding-new', async(req, res) => {
+        app.get('/adding-new', async (req, res) => {
             const result = await arrays.aggregate([
                 {
                     $project: {
                         orderId: 1,
-                        totalPrice : {$sum: '$items.price'},
-                        totalItems : {$size: '$items'}
+                        totalPrice: { $sum: '$items.price' },
+                        totalItems: { $size: '$items' }
                     }
                 }
             ]).toArray();
 
+            res.send(result)
+        })
+
+
+        //Adding a Discount Field
+        app.get('/discount', async (req, res) => {
+            const result = await arrays.aggregate([
+                {
+                    $unwind: '$items'
+                },
+                {
+                    $project: {
+                        'items.price': 1,
+                        'items.discount': {
+                            $cond: {
+                                if: { $gte: ['$items.price', 100] },
+                                then: 10,
+                                else: 0
+                            }
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: '$_id', items: { $push: '$items' }
+                    }
+                }
+
+
+            ]).toArray();
             res.send(result)
         })
 
