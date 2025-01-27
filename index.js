@@ -349,6 +349,36 @@ async function run() {
             res.send(result)
         })
 
+
+        //Finding the Total Price of Each Item in an Order
+        app.get('/total-price-one', async (req, res) => {
+            const result = await arrays.aggregate([
+                {
+                    $unwind: '$items'
+                },
+                {
+                    // inside the items
+                    // $project: {
+                    //     'items.product': 1,
+                    //     'items.totalAmount': {$sum: '$items.quantity'},
+                    //     'items.totalPrice': {$multiply: ['$items.quantity','$items.price']}
+                    // },
+
+                    $project: {
+                        product: '$items.product',
+                        orderId: 1,
+                        totalAmount: { $multiply: ['$items.quantity', '$items.price'] }
+                    }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
+
+
+
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
