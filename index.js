@@ -376,6 +376,34 @@ async function run() {
         })
 
 
+        //Add a Discount Field but Keep Everything Else
+        app.get('/discount-price-using-addFields', async (req, res) => {
+            const result = await arrays.aggregate([
+                {
+                    $unwind: '$items'
+                },
+                {
+                    $addFields: {
+                        items: {
+                            discount: {
+                                $cond: {
+                                    if: { $gte: ['$items.price', 100] },
+                                    then: 10,
+                                    else: 0
+                                }
+
+                            }
+                        }
+                    }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
+
+
+        
+
 
 
 
