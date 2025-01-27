@@ -402,7 +402,40 @@ async function run() {
         })
 
 
-        
+        //Add a discount field using project
+        app.get('/discount-object', async (req, res) => {
+            const result = await arrays.aggregate([
+                {
+                    $unwind: '$items'
+                },
+                {
+                    $project: {
+                        orderId: 1,
+                        items: {
+                            product: 1,
+                            quantity: 1,
+                            price: 1,
+                            discount: {
+                                $cond: {
+                                    if: { $gte: ['$items.price', 100] },
+                                    then: 10,
+                                    else: 0
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $group: { _id: '$_id', orderId: { $first: '$orderId' }, items: { $push: '$items' } }
+                }
+            ]).toArray()
+
+            res.send(result)
+        })
+
+
+
+
 
 
 
