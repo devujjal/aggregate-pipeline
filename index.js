@@ -34,6 +34,7 @@ async function run() {
         const orders = database.collection('orders');
         const customers = database.collection('customers');
         const arrays = database.collection('arrays');
+        const ourSales = database.collection('ourSales');
 
 
 
@@ -434,6 +435,54 @@ async function run() {
         })
 
 
+        // Total Sales Per Product
+        app.get('/total-sales', async (req, res) => {
+            const result = await ourSales.aggregate([
+                {
+                    $unwind: '$items'
+                },
+                {
+                    $project: {
+                        product: '$items.product',
+                        quantity: '$items.quantity',
+                        price: '$items.price',
+                        // totalperPrice: { $multiply: ['$items.quantity', '$items.price'] }
+                    }
+                },
+                {
+                    // $group: {_id: '$product', totalAmount: {$sum: '$totalperPrice'}}
+                    $group: {_id: '$product', totalAmount: {$sum: {$multiply: ['$quantity', '$price']}} }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
+
+
+        // OR
+
+        app.get('/total-sales-or', async(req, res) => {
+            const result = await ourSales.aggregate([
+                {
+                    $unwind: '$items'
+                },
+                {
+                    $group: {
+                        _id: '$items.product',
+                        totalAmountSales: {$sum: {$multiply: ['$items.quantity', '$items.price']}}
+                    }
+                },
+                {
+                    $project: {
+                        product: '$_id',
+                        totalAmountSales: 1,
+                        _id:0
+                    }
+                }
+            ]).toArray();
+
+            res.send(result)
+        })
 
 
 
